@@ -1,5 +1,5 @@
 
-load("~/sampleinfo.rda")
+#load("~/sampleinfo.rda")
 filenames <- readLines("/data2/exome_heshunwen/filenames")
 len <- nchar(filenames)
 
@@ -26,11 +26,12 @@ for (i in 1:length(s.end)){
           paste('java -Xmx4g -jar ',gatk.dir,'GenomeAnalysisTK.jar -R ',ref,' -T IndelRealigner -I out.bam -targetIntervals out.realign.list -o out.realign.bam -known ',known.vcf,' -LOD 0.4 &',sep=""),
           paste('java -Xmx6g -Djava.io.tmpdir=./temp -jar ',picard.dir,'MarkDuplicates.jar I=out.realign.bam O=out.realign.markdup.bam METRICS_FILE=./metrics ASSUME_SORTED=false CREATE_INDEX=true VALIDATION_STRINGENCY=LENIENT',sep=""),
           'mkfifo out.base.recal.csv',
-          paste('java -Xmx6g -Djava.io.tmpdir=./temp -jar ',gatk.dir,'GenomeAnalysisTK.jar  -l INFO -R ',ref,' -I out.realign.markdup.bam -knownSites ',known.vcf,' -T CountCovariates -cov ReadGroupCovariate -cov ReadGroupCovariate -cov QualityScoreCovariate -cov CycleCovariate -cov DinucCovariate -recalFile out.base.recal.csv -nt 2 &',sep="")
+          paste('java -Xmx6g -Djava.io.tmpdir=./temp -jar ',gatk.dir,'GenomeAnalysisTK.jar  -l INFO -R ',ref,' -I out.realign.markdup.bam -knownSites ',known.vcf,' -T CountCovariates -cov ReadGroupCovariate -cov ReadGroupCovariate -cov QualityScoreCovariate -cov CycleCovariate -cov DinucCovariate -recalFile out.base.recal.csv -nt 2 &',sep=""),
           paste('java -Xmx4g -Djava.io.tmpdir=./temp -jar ',gatk.dir,'GenomeAnalysisTK.jar -l INFO -R ',ref,' -I out.realign.markdup.bam -T TableRecalibration -o out.realign.markdup.recal.bam -recalFile out.base.recal.csv',sep=""),
           paste('java -Xmx4g -Djava.io.tmpdir=./temp -jar ',picard.dir,'FixMateInformation.jar I=out.realign.markdup.recal.bam O=out.realign.markdup.recal.fix.bam SO=coordinate VALIDATION_STRINGENCY=LENIENT CREATE_INDEX=true',sep="")
           )
-  write.table(sh,file="aln.sh")
+  write.table(sh,file="aln.sh", row.names=F, quote=F, col.names=F)
+  setwd("../")
 }
 for (i in 1:length(s.end)){
   fq <- grep(p.end[i],filenames,value=TRUE)
@@ -46,11 +47,11 @@ for (i in 1:length(s.end)){
           paste('java -Xmx4g -jar ',gatk.dir,'GenomeAnalysisTK.jar -R ',ref,' -T IndelRealigner -I out.bam -targetIntervals out.realign.list -o out.realign.bam -known ',known.vcf,' -LOD 0.4 &',sep=""),
           paste('java -Xmx6g -Djava.io.tmpdir=./temp -jar ',picard.dir,'MarkDuplicates.jar I=out.realign.bam O=out.realign.markdup.bam METRICS_FILE=./metrics ASSUME_SORTED=false CREATE_INDEX=true VALIDATION_STRINGENCY=LENIENT',sep=""),
           'mkfifo out.base.recal.csv',
-          paste('java -Xmx6g -Djava.io.tmpdir=./temp -jar ',gatk.dir,'GenomeAnalysisTK.jar  -l INFO -R ',ref,' -I out.realign.markdup.bam -knownSites ',known.vcf,' -T CountCovariates -cov ReadGroupCovariate -cov ReadGroupCovariate -cov QualityScoreCovariate -cov CycleCovariate -cov DinucCovariate -recalFile out.base.recal.csv -nt 2 &',sep="")
+          paste('java -Xmx6g -Djava.io.tmpdir=./temp -jar ',gatk.dir,'GenomeAnalysisTK.jar  -l INFO -R ',ref,' -I out.realign.markdup.bam -knownSites ',known.vcf,' -T CountCovariates -cov ReadGroupCovariate -cov ReadGroupCovariate -cov QualityScoreCovariate -cov CycleCovariate -cov DinucCovariate -recalFile out.base.recal.csv -nt 2 &',sep=""),
           paste('java -Xmx4g -Djava.io.tmpdir=./temp -jar ',gatk.dir,'GenomeAnalysisTK.jar -l INFO -R ',ref,' -I out.realign.markdup.bam -T TableRecalibration -o out.realign.markdup.recal.bam -recalFile out.base.recal.csv',sep=""),
           paste('java -Xmx4g -Djava.io.tmpdir=./temp -jar ',picard.dir,'FixMateInformation.jar I=out.realign.markdup.recal.bam O=out.realign.markdup.recal.fix.bam SO=coordinate VALIDATION_STRINGENCY=LENIENT CREATE_INDEX=true',sep="")
           )
-  write.table(sh,file="aln.sh")
+  write.table(sh,file="aln.sh", row.names=F, col.names=F, quote=F)
   #system('qsub aln.sh')
   setwd("../")
 }
